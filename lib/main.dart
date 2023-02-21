@@ -4,7 +4,6 @@ import 'package:noter/Auth/login.dart';
 import 'package:noter/Noter_Screens/FactoryNote.dart';
 import 'package:noter/Noter_Screens/noter_main.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'dart:ui';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();

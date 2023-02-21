@@ -1,15 +1,29 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:noter/ClassGUI.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+
 
 class SingUp extends StatefulWidget {
-  const SingUp({super.key});
-
+  SingUp({super.key});
   @override
   State<SingUp> createState() => _SingUpState();
 }
 
 class _SingUpState extends State<SingUp> {
+  GlobalKey<FormState> formkey = new GlobalKey<FormState>() ;
+  var userNa, userNy, password1, password2, email;
+   Creat_e_fun() {
+    var formdata = formkey.currentState;
+    if (formdata!.validate()) {
+      print("valid");
+    }else{
+      print("not valid");
+    }
+
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,79 +43,143 @@ class _SingUpState extends State<SingUp> {
               ),
             ],
           ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Container(
-                margin: EdgeInsets.all(18.5),
-                child: TextFormField(
-                  maxLines: 1,
-                  decoration: InputDecoration(
-                    hintText: "Email",
-                    prefixIcon: Icon(Icons.email_rounded),
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(25)),
+          Form(
+            key:  formkey,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Container(
+                  margin: EdgeInsets.all(18.5),
+                  child: TextFormField(
+                    maxLines: 1,
+                    decoration: InputDecoration(
+                      hintText: "Email",
+                      prefixIcon: Icon(Icons.email_rounded),
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(25)),
+                    ),
+                    obscureText: false,
+                    validator: ((value) {
+                      if (value!.isEmpty == true) {
+                        return "Enter True Email"; 
+                      }
+                      
+                      if (value.length <= 3) {
+                        return "R-Chack Email is so short";
+                      } else {
+                        return value;
+                      }
+                    }),
+                    onSaved: (value) {
+                      value = email;
+                    },
                   ),
-                  obscureText: false,
                 ),
-              ),
-              /**PassWord Enter filed */
-              Container(
-                margin: EdgeInsets.all(18.5),
-                child: TextFormField(
-                  maxLines: 1,
-                  decoration: InputDecoration(
-                    hintText: "Password",
-                    prefixIcon: Icon(Icons.password_rounded),
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(25)),
+                /**PassWord Enter filed */
+                Container(
+                  margin: EdgeInsets.all(18.5),
+                  child: TextFormField(
+                    maxLines: 1,
+                    decoration: InputDecoration(
+                      hintText: "Password",
+                      prefixIcon: Icon(Icons.password_rounded),
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(25)),
+                    ),
+                    obscureText: true,
+                    onSaved: (value) {
+                      value = password1 ;
+                    },
+                    validator: ((value) {
+                      if (value!.isEmpty == true) {
+                        return "Enter Password";
+                      }
+                      if (value.length <= 4) {
+                        return "Week Password";
+                      }
+                    }),
                   ),
-                  obscureText: true,
                 ),
-              ),
-              /**PassWord R-Enter filed */
-              Container(
-                margin: EdgeInsets.all(18.5),
-                child: TextFormField(
-                  maxLines: 1,
-                  decoration: InputDecoration(
-                    hintText: "Password Again",
-                    prefixIcon: Icon(Icons.password_rounded),
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(25)),
+                /**PassWord R-Enter filed */
+                Container(
+                  margin: EdgeInsets.all(18.5),
+                  child: TextFormField(
+                    maxLines: 1,
+                    decoration: InputDecoration(
+                      hintText: "Password Again",
+                      prefixIcon: Icon(Icons.password_rounded),
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(25)),
+                    ),
+                     onSaved: (value) {
+                      value = password2 ;
+                    },
+                    validator: ((value) {
+                      if (value!.isEmpty == true) {
+                        return "Enter Password";
+                      }
+                      if (value.length <= 4) {
+                        return "Week Password";
+                      }else if (password1=!password2) {
+                        return "not same password"; 
+                      }
+                      else {
+                        return value;
+                      }
+                    }),
+                    obscureText: true,
                   ),
-                  obscureText: true,
                 ),
-              ),
-              /**User Public Name  */
-              Container(
-                margin: EdgeInsets.all(18.5),
-                child: TextFormField(
-                  maxLines: 1,
-                  decoration: InputDecoration(
-                    hintText: "Name",
-                    prefixIcon: Icon(Icons.person_add),
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(25)),
+                /**User Public Name  */
+                Container(
+                  margin: EdgeInsets.all(18.5),
+                  child: TextFormField(
+                    maxLines: 1,
+                    decoration: InputDecoration(
+                      hintText: "Name",
+                      prefixIcon: Icon(Icons.person_add),
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(25)),
+                    ),
+                    obscureText: false,
+                    onSaved: (value) {
+                      value = userNy; 
+                    },
+                    validator: ((value) {
+                      if (value?.isEmpty == true) {
+                        return "Enter Your Name";
+                      } else {
+                        return value;
+                      }
+                    }),
                   ),
-                  obscureText: false,
                 ),
-              ),
-              /**User Name App */
-              Container(
-                margin: EdgeInsets.all(18.5),
-                child: TextFormField(
-                  maxLines: 1,
-                  decoration: InputDecoration(
-                    hintText: "UserName",
-                    prefixIcon: Icon(Icons.person_add_alt_1_outlined),
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(25)),
+                /**User Name App */
+                Container(
+                  margin: EdgeInsets.all(18.5),
+                  child: TextFormField(
+                    maxLines: 1,
+                    decoration: InputDecoration(
+                      hintText: "UserName",
+                      prefixIcon: Icon(Icons.person_add_alt_1_outlined),
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(25)),
+                    ),
+                    obscureText: false,
+                    validator: ((value) {
+                      if (value?.isEmpty == true) {
+                        return "must add user name id";
+                      }
+                      if (value?.length == 4) {
+                        return "short user name";
+                      } else {
+                        return value;
+                      }
+                    }),
                   ),
-                  obscureText: false,
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
           /** Row Button Auth  */
           Container(
@@ -139,7 +217,7 @@ class _SingUpState extends State<SingUp> {
               children: [
                 Button3lsaramegy_text(
                     Color(0xffEFBF00), 175, 50, Text("Snigin"), () {
-                  Navigator.pushReplacementNamed(context, "Noter1");
+                  Creat_e_fun();
                 }, 27),
                 Button3lsaramegy_text(
                     Color(0xff72716D),
