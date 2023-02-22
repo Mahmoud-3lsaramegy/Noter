@@ -1,5 +1,6 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:noter/Auth/Social_auth.dart';
 import 'dart:ui';
 import 'package:noter/ClassGUI.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -10,38 +11,55 @@ class SingUp extends StatefulWidget {
   State<SingUp> createState() => _SingUpState();
 }
 
+/**
+ * user 
+ *   tast 
+ *email
+ * kop2090_______kopboy@gmail.com_____12345678
+ */
 class _SingUpState extends State<SingUp> {
+  /*
+  Creat email fun
+  email created with firebeas Auth
+   */
+  //Form Key
   GlobalKey<FormState> formkey = new GlobalKey<FormState>();
-  var userNa, userNy, password1, password2, email;
-  Creat_e_fun() async {
+  // Faild Var
+  var userNa, userNy, password, email;
+
+  Future creat_e_fun() async {
     var formdata = formkey.currentState;
-    if (formdata!.validate()) {
+
+    if (formdata!.validate() == true) {
+      formdata.save();
+      print("${userNa}" + "_______" + "${email}" + "_____" + "${password}");
       try {
         final credential =
             await FirebaseAuth.instance.createUserWithEmailAndPassword(
           email: email,
-          password: password2,
+          password: password,
         );
-        return credential;
       } on FirebaseAuthException catch (e) {
         if (e.code == 'weak-password') {
-          AwesomeDialog(
-              context: context,
-              title: "password Erro",
-              body: Text("The password provided is too weak."));
           print('The password provided is too weak.');
-        } else if (e.code == 'email-already-in-use') {
           AwesomeDialog(
-              context: context,
-              title: "Email Erro",
-              body: Text("The account already exists for that email."));
+                  context: context,
+                  title: "password Erro",
+                  body: Text("The password provided is too weak."))
+              .show();
+        } else if (e.code == 'email-already-in-use') {
           print('The account already exists for that email.');
+          AwesomeDialog(
+                  context: context,
+                  title: "Email Erro",
+                  body: Text("The account already exists for that email."))
+              .show();
         }
       } catch (e) {
         print(e);
       }
     } else {
-      print("not valid");
+      print("not filed");
     }
   }
 
@@ -80,18 +98,16 @@ class _SingUpState extends State<SingUp> {
                           borderRadius: BorderRadius.circular(25)),
                     ),
                     obscureText: false,
+                    onSaved: (value) {
+                      email = value;
+                    },
                     validator: ((value) {
                       if (value!.isEmpty == true) {
                         return "Enter True Email";
-                      } else if (value.length <= 3) {
+                      } else if (value.length < 5) {
                         return "R-Chack Email is so short";
-                      } else {
-                        return null;
                       }
                     }),
-                    onSaved: (value) {
-                      value = email;
-                    },
                   ),
                 ),
                 /**PassWord Enter filed */
@@ -107,47 +123,19 @@ class _SingUpState extends State<SingUp> {
                     ),
                     obscureText: true,
                     onSaved: (value) {
-                      value = password1;
+                      password = value;
                     },
                     validator: ((value) {
                       if (value!.isEmpty == true) {
                         return "Enter Password";
-                      } else if (value.length <= 4) {
+                      } else if (value.length < 4) {
                         return "Week Password";
-                      } else {
-                        return null;
                       }
                     }),
                   ),
                 ),
                 /**PassWord R-Enter filed */
-                Container(
-                  margin: EdgeInsets.all(18.5),
-                  child: TextFormField(
-                    maxLines: 1,
-                    decoration: InputDecoration(
-                      hintText: "Password Again",
-                      prefixIcon: Icon(Icons.password_rounded),
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(25)),
-                    ),
-                    onSaved: (value) {
-                      value = password2;
-                    },
-                    validator: ((value) {
-                      if (value!.isEmpty == true) {
-                        return "Enter Password";
-                      } else if (value.length <= 4) {
-                        return "Week Password";
-                      } else if (password1 = !password2) {
-                        return "not same password";
-                      } else {
-                        return null;
-                      }
-                    }),
-                    obscureText: true,
-                  ),
-                ),
+
                 /**User Public Name  */
                 Container(
                   margin: EdgeInsets.all(18.5),
@@ -160,14 +148,12 @@ class _SingUpState extends State<SingUp> {
                           borderRadius: BorderRadius.circular(25)),
                     ),
                     obscureText: false,
-                    onSaved: (value) {
-                      value = userNy;
-                    },
+                    onSaved: ((value) {
+                      userNy = value;
+                    }),
                     validator: ((value) {
                       if (value!.isEmpty == true) {
                         return "Enter Your Name";
-                      } else {
-                        return null;
                       }
                     }),
                   ),
@@ -184,13 +170,14 @@ class _SingUpState extends State<SingUp> {
                           borderRadius: BorderRadius.circular(25)),
                     ),
                     obscureText: false,
+                    onSaved: (value) {
+                      userNa = value;
+                    },
                     validator: ((value) {
                       if (value?.isEmpty == true) {
                         return "must add user name id";
-                      } else if (value!.length <= 4) {
+                      } else if (value!.length < 4) {
                         return "short user name";
-                      } else {
-                        return null;
                       }
                     }),
                   ),
@@ -203,7 +190,7 @@ class _SingUpState extends State<SingUp> {
             width: double.infinity,
             margin: EdgeInsets.all(20),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 /**Googel Login */
                 Button3lsaramegy_text(
@@ -216,8 +203,12 @@ class _SingUpState extends State<SingUp> {
                     () {},
                     50),
                 /**Facebook Login */
-                Button3lsaramegy_text(Color(0xff72716D), 75, 75,
-                    Image.asset("images/google.png"), () {}, 50),
+                Button3lsaramegy_text(
+                    Color(0xff72716D), 75, 75, Image.asset("images/google.png"),
+                    () async {
+                  await signInWithGoogle();
+                  Navigator.pushReplacementNamed(context, "Noter1");
+                }, 50),
               ],
             ),
           ),
@@ -225,37 +216,48 @@ class _SingUpState extends State<SingUp> {
           /*SizedBox(
             width: double.infinity,
             height: 100,
-          ),*/
+          ),*/ //27
           Container(
             margin: EdgeInsets.all(10),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Button3lsaramegy_text(
-                    Color(0xffEFBF00), 175, 50, Text("Snigin"), () {
-                  UserCredential respons = Creat_e_fun();
-                  print("+++++++++++++++++++++++++++++++++++++++");
-                  if (respons != null) {
-                    print(respons.user!.email);
-                  } else {
-                    print("find some problm");
-                  }
-                  print("+++++++++++++++++++++++++++++++++++++++");
-                }, 27),
+                ElevatedButton(
+                  onPressed: () async {
+                    await creat_e_fun();
+                    Navigator.pushReplacementNamed(context, "login");
+                  },
+                  child: Text("Singup"),
+                  style: ButtonStyle(
+                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                        RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(25),
+                    )),
+                    backgroundColor:
+                        MaterialStateProperty.all(Color(0xffEFBF00)),
+                    fixedSize: MaterialStateProperty.all(Size(150, 45)),
+                  ),
+                ),
                 Button3lsaramegy_text(
                     Color(0xff72716D),
-                    175,
-                    50,
+                    150,
+                    45,
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text("I realy have account"),
-                        Icon(Icons.arrow_back)
+                        Text(
+                          "I realy have account",
+                          style: TextStyle(fontSize: 12),
+                        ),
+                        Icon(
+                          Icons.arrow_back,
+                          size: 10,
+                        )
                       ],
                     ), () {
                   Navigator.pushReplacementNamed(context, "login");
-                }, 27),
+                }, 25),
               ],
             ),
           )
@@ -264,3 +266,79 @@ class _SingUpState extends State<SingUp> {
     );
   }
 }
+
+
+
+
+
+ /*
+  // Fun To Sing data in firebase
+  Future Creat_e_fun() async {
+    var formdata = formkey.currentState;
+    formdata!.save();
+    if (formdata.validate()) {
+      try {
+        final credential =
+            await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: email,
+          password: password2,
+        );
+      } on FirebaseAuthException catch (e) {
+        if (e.code == 'weak-password') {
+          AwesomeDialog(
+                  context: context,
+                  title: "password Erro",
+                  body: Text("The password provided is too weak."))
+              .show();
+          print('The password provided is too weak.');
+        } else if (e.code == 'email-already-in-use') {
+          AwesomeDialog(
+                  context: context,
+                  title: "Email Erro",
+                  body: Text("The account already exists for that email."))
+              .show();
+          print('The account already exists for that email.');
+        }
+      } catch (e) {
+        print(e);
+      }
+    } else {
+      print("not valid");
+    }
+    print("+++++++++++++++++++++++++++++++++++++++");
+    if (respons != null) {
+      print(respons);
+    } else {
+      print("find some problm");
+    }
+    print("+++++++++++++++++++++++++++++++++++++++");
+ 
+  } */
+
+  /*
+  Container(
+                  margin: EdgeInsets.all(18.5),
+                  child: TextFormField(
+                    maxLines: 1,
+                    decoration: InputDecoration(
+                      hintText: "Password Again",
+                      prefixIcon: Icon(Icons.password_rounded),
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(25)),
+                    ),
+                    onSaved: (value) {
+                      password2 = value;
+                    },
+                    validator: ((value) {
+                      if (value!.isEmpty == true) {
+                        return "Enter Password";
+                      } else if (value.length < 4) {
+                        return "Week Password";
+                      } else if (password1 = !password2) {
+                        return "not same password";
+                      }
+                    }),
+                    obscureText: true,
+                  ),
+                ),
+   */
