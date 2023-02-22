@@ -6,6 +6,6 @@ Note App by Elsaramegy
 
 ## SoftWare Engnier
 
-[Email][def]
 
-[def]: elsaramegymahmoud404@gmail.com
+### Text Me on 👇👇
+elsaramegymahmoud404@gmail.com
