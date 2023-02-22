@@ -1,9 +1,8 @@
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:noter/ClassGUI.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
-
 
 class SingUp extends StatefulWidget {
   SingUp({super.key});
@@ -12,16 +11,38 @@ class SingUp extends StatefulWidget {
 }
 
 class _SingUpState extends State<SingUp> {
-  GlobalKey<FormState> formkey = new GlobalKey<FormState>() ;
+  GlobalKey<FormState> formkey = new GlobalKey<FormState>();
   var userNa, userNy, password1, password2, email;
-   Creat_e_fun() {
+  Creat_e_fun() async {
     var formdata = formkey.currentState;
     if (formdata!.validate()) {
-      print("valid");
-    }else{
+      try {
+        final credential =
+            await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: email,
+          password: password2,
+        );
+        return credential;
+      } on FirebaseAuthException catch (e) {
+        if (e.code == 'weak-password') {
+          AwesomeDialog(
+              context: context,
+              title: "password Erro",
+              body: Text("The password provided is too weak."));
+          print('The password provided is too weak.');
+        } else if (e.code == 'email-already-in-use') {
+          AwesomeDialog(
+              context: context,
+              title: "Email Erro",
+              body: Text("The account already exists for that email."));
+          print('The account already exists for that email.');
+        }
+      } catch (e) {
+        print(e);
+      }
+    } else {
       print("not valid");
     }
-
   }
 
   @override
@@ -44,7 +65,7 @@ class _SingUpState extends State<SingUp> {
             ],
           ),
           Form(
-            key:  formkey,
+            key: formkey,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
@@ -61,13 +82,11 @@ class _SingUpState extends State<SingUp> {
                     obscureText: false,
                     validator: ((value) {
                       if (value!.isEmpty == true) {
-                        return "Enter True Email"; 
-                      }
-                      
-                      if (value.length <= 3) {
+                        return "Enter True Email";
+                      } else if (value.length <= 3) {
                         return "R-Chack Email is so short";
                       } else {
-                        return value;
+                        return null;
                       }
                     }),
                     onSaved: (value) {
@@ -88,14 +107,15 @@ class _SingUpState extends State<SingUp> {
                     ),
                     obscureText: true,
                     onSaved: (value) {
-                      value = password1 ;
+                      value = password1;
                     },
                     validator: ((value) {
                       if (value!.isEmpty == true) {
                         return "Enter Password";
-                      }
-                      if (value.length <= 4) {
+                      } else if (value.length <= 4) {
                         return "Week Password";
+                      } else {
+                        return null;
                       }
                     }),
                   ),
@@ -111,20 +131,18 @@ class _SingUpState extends State<SingUp> {
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(25)),
                     ),
-                     onSaved: (value) {
-                      value = password2 ;
+                    onSaved: (value) {
+                      value = password2;
                     },
                     validator: ((value) {
                       if (value!.isEmpty == true) {
                         return "Enter Password";
-                      }
-                      if (value.length <= 4) {
+                      } else if (value.length <= 4) {
                         return "Week Password";
-                      }else if (password1=!password2) {
-                        return "not same password"; 
-                      }
-                      else {
-                        return value;
+                      } else if (password1 = !password2) {
+                        return "not same password";
+                      } else {
+                        return null;
                       }
                     }),
                     obscureText: true,
@@ -143,13 +161,13 @@ class _SingUpState extends State<SingUp> {
                     ),
                     obscureText: false,
                     onSaved: (value) {
-                      value = userNy; 
+                      value = userNy;
                     },
                     validator: ((value) {
-                      if (value?.isEmpty == true) {
+                      if (value!.isEmpty == true) {
                         return "Enter Your Name";
                       } else {
-                        return value;
+                        return null;
                       }
                     }),
                   ),
@@ -169,11 +187,10 @@ class _SingUpState extends State<SingUp> {
                     validator: ((value) {
                       if (value?.isEmpty == true) {
                         return "must add user name id";
-                      }
-                      if (value?.length == 4) {
+                      } else if (value!.length <= 4) {
                         return "short user name";
                       } else {
-                        return value;
+                        return null;
                       }
                     }),
                   ),
@@ -217,7 +234,14 @@ class _SingUpState extends State<SingUp> {
               children: [
                 Button3lsaramegy_text(
                     Color(0xffEFBF00), 175, 50, Text("Snigin"), () {
-                  Creat_e_fun();
+                  UserCredential respons = Creat_e_fun();
+                  print("+++++++++++++++++++++++++++++++++++++++");
+                  if (respons != null) {
+                    print(respons.user!.email);
+                  } else {
+                    print("find some problm");
+                  }
+                  print("+++++++++++++++++++++++++++++++++++++++");
                 }, 27),
                 Button3lsaramegy_text(
                     Color(0xff72716D),
